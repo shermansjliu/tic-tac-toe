@@ -2,7 +2,7 @@ class GameController
     attr_accessor :tie
     def initialize
         @currentPlayer = ''
-        @players = {}
+        @players = []
         @tie = false
     end
 
@@ -10,8 +10,15 @@ class GameController
 
     end
 
-    def win_msg
-
+    def winMsg(sign)
+        winningPlayer = ''
+        @players.each { |player|
+            if player.sign == sign
+                winningPlayer = player
+                break
+            end
+        }
+        return "#{winningPlayer.name} Wins!"
     end
 
     def game_msg(player)
@@ -21,16 +28,15 @@ class GameController
     end
 
     def addPlayer(player)
-        @players[player.name] = player
+        @players.push(player)
     end
 end
 
 class Player
-    attr_accessor :name, :move
+    attr_accessor :name, :sign
     def initialize (name)
         @name  = name
-        @move  = ''
-        @win = false
+        @sign  = ''
     end
 
 
@@ -65,12 +71,48 @@ class Board
             return result
     end
 
-    def result
+    #If no player has won and the board is full, there is a tie
+    #If one player has their sign 3 in a row, column, or diagonal
+    def win?
+        x = ['x' ,'x', 'x']
+        o = ['o', 'o', 'o']
+        win = false
+        sign = ''
         #check row
+        @moves.each { |row|
+            if row == x or row == o
+                win = true
+                sign = row[0]
+                break
+            end
+        }
 
         #check diagonal
+        diagArr = []
+        i = 0
+        3.times {
+            diagArr << @moves[i][i]
+            i += 1
+        }
+        if diagArr == x or diagArr == o
+            win = true
+            sign = diagArr[0]
+        end
 
         #check column
+        for row in (0..2)
+            column = []
+            for col in (0..2)
+                column.push(@moves[col][row])
+            end
+            if column == x or column == o
+                win = true
+                sign = column[0]
+                break
+            end
+        end
+
+        return [win, sign]
     end
 
     def addMove(sign)
@@ -92,9 +134,6 @@ class Board
 
     end
 
-
-    def switchPlayer()
-    end
 
     private
     def tileEmpty?(x, y)
@@ -125,39 +164,46 @@ displayText ("What is Player 2's name?")
 playerTwo = Player.new(gets.chomp)
 
 loop do
-displayText("Is #{playerOne.name} 'x' or 'o'?")
-sign = gets.chomp.downcase
-playerOne.move = sign
-break if sign == 'x' || sign == 'o'
+    displayText("Is #{playerOne.name} 'x' or 'o'?")
+    sign = gets.chomp.downcase
+    playerOne.sign = sign
+    break if sign == 'x' || sign == 'o'
 end
 
-if playerOne.move == 'x'
-    playerTwo.move = 'o'
+if playerOne.sign == 'x'
+    playerTwo.sign = 'o'
 else
-    playerTwo.move = 'x'
+    playerTwo.sign = 'x'
 end
 
 gc.addPlayer(playerOne)
 gc.addPlayer(playerTwo)
 
-displayText("#{playerTwo.name} will be #{playerTwo.move}")
+displayText("#{playerTwo.name} will be #{playerTwo.sign}")
 displayText("Let the game begin!")
 
 currentPlayer = playerOne
+tie = false
+
 loop do
+    sign = ''
     displayText("it's #{currentPlayer.name}'s turn'")
     displayText("Choose a tile on the board")
     print board.display()
-    board.addMove(currentPlayer.move)
-
+    board.addMove(currentPlayer.sign)
     print "\n #{board.display} \n"
-    currentPlayer = gc.switchPlayer()
 
+    if currentPlayer == playerOne
+        currentPlayer = playerTwo
+    else
+        currentPlayer = playerOne
+    end
 
-    # displayText(gc.turn)
-    #
-    # displayText("Make a move")
-    # board.addMove()
-    tie = false
-    break if tie == false
+    win, sign = board.win?
+    puts "win #{win}"
+    if win
+        puts gc.winMsg (sign)
+    end
+
+    break if tie or win
 end
