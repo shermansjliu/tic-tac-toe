@@ -1,5 +1,5 @@
 class GameController
-    attr_accessor: :tie
+    attr_accessor :tie
     def initialize
         @players = {}
         @tie = false
@@ -34,20 +34,32 @@ class Player
 end
 
 class Board
-    attr_accessor: :tiles
+    attr_accessor :tiles
     def initialize
         @moves = [[1,2,3], [4,5,6], [7,8,9]]
         @tiles = {1=>[0,0], 2=>[0,1], 3=>[0,2], 4=>[1, 0], 5=>[1,1], 6=>[1,2], 7=>[2,0], 8=>[2,1], 9=>[2,2]}
     end
 
+
     def display
-        counter = 1
+        result = ''
+        @moves.each_with_index { |row, index|
 
-        @tiles.keys.each |tile|
-        print 
-        end
+            row.each_with_index {|tile, index|
+                if index <= 1
+                    result += "#{tile} | "
+                else
+                    result += "#{tile}"
+                end
+            }
+            if index <= 1
+                result += "\n--+---+--- \n"
+            else
+                result += "\n"
+            end
+        }
 
-
+            return result
     end
 
     def result
@@ -59,6 +71,7 @@ class Board
     end
 
     def addMove()
+    end
 
 
 end
@@ -101,9 +114,12 @@ displayText("Player 2's sign is #{playerTwo.move}")
 displayText("Let the game begin!")
 
 loop do
-    displayText(gc.turn)
-    print board.display
-    displayText("Make a move")
-    board.addMove
+    print board.display()
+    # print board.display()
+    # displayText(gc.turn)
+    #
+    # displayText("Make a move")
+    # board.addMove()
+    tie = false
     break if tie == false
 end
