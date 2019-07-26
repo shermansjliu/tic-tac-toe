@@ -1,7 +1,6 @@
 class GameController
     attr_accessor :tie
     def initialize
-        @currentPlayer = ''
         @players = []
         @tie = false
     end
@@ -21,10 +20,7 @@ class GameController
         return "#{winningPlayer.name} Wins!"
     end
 
-    def game_msg(player)
 
-        # TODO: Compelte game msg method which displalys "It's player twos turn forever and ever until someone wins"
-    end
 
     def addPlayer(player)
         @players.push(player)
@@ -68,7 +64,7 @@ class Board
             end
         }
 
-            return result
+        return result
     end
 
 
@@ -121,8 +117,7 @@ class Board
         x = ''
         y = ''
         loop do
-            displayText("Enter a number between 1-9 that corresponds to an empty tile")
-            move = gets.chomp
+            move = gets
             x, y = @tiles[move.to_i] if @tiles.has_key?(move.to_i)
             if x.is_a?(Integer) and y.is_a?(Integer)
                 if tileEmpty?(x, y)
@@ -156,9 +151,10 @@ class Board
 end
 
 def displayText(str)
+    print "\n"
     str.split("").each {|char|
         print char
-        # sleep(0.03)
+        sleep(0.03)
     }
     print "\n"
 end
@@ -190,16 +186,14 @@ gc.addPlayer(playerOne)
 gc.addPlayer(playerTwo)
 
 displayText("#{playerTwo.name} will be #{playerTwo.sign}")
-displayText("Let the game begin!")
 
 currentPlayer = playerOne
 loop do
     sign = ''
-    displayText("it's #{currentPlayer.name}'s turn'")
-    displayText("Choose a tile on the board")
+    displayText("It's #{currentPlayer.name}'s turn\n")
     print board.display()
+    displayText("Enter a number between 1-9 that corresponds to an empty tile \n")
     board.addMove(currentPlayer.sign)
-    print "\n #{board.display} \n"
 
     if currentPlayer == playerOne
         currentPlayer = playerTwo
