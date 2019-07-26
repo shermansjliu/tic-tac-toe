@@ -23,13 +23,13 @@ class GameController
 
     def game_msg(player)
 
-
         # TODO: Compelte game msg method which displalys "It's player twos turn forever and ever until someone wins"
     end
 
     def addPlayer(player)
         @players.push(player)
     end
+
 end
 
 class Player
@@ -70,6 +70,8 @@ class Board
 
             return result
     end
+
+
 
     #If no player has won and the board is full, there is a tie
     #If one player has their sign 3 in a row, column, or diagonal
@@ -134,14 +136,22 @@ class Board
 
     end
 
+    def boardFull?
 
+        for row in @moves
+            for tile in row
+                if !tile.is_a?(String)
+                    return false
+                end
+            end
+        end
+        return true
+
+    end
     private
     def tileEmpty?(x, y)
         return @moves[x][y].is_a?(Integer)
     end
-
-
-
 
 end
 
@@ -183,8 +193,6 @@ displayText("#{playerTwo.name} will be #{playerTwo.sign}")
 displayText("Let the game begin!")
 
 currentPlayer = playerOne
-tie = false
-
 loop do
     sign = ''
     displayText("it's #{currentPlayer.name}'s turn'")
@@ -200,10 +208,16 @@ loop do
     end
 
     win, sign = board.win?
-    puts "win #{win}"
+
     if win
         puts gc.winMsg (sign)
+        break
+
+    elsif board.boardFull?
+        #The board is fulld and everyone has tied
+        displayText("You both tie!")
+        break
+
     end
 
-    break if tie or win
 end
