@@ -1,6 +1,7 @@
 class GameController
     attr_accessor :tie
     def initialize
+        @currentPlayer = ''
         @players = {}
         @tie = false
     end
@@ -13,7 +14,9 @@ class GameController
 
     end
 
-    def game_msg
+    def game_msg(player)
+
+
         # TODO: Compelte game msg method which displalys "It's player twos turn forever and ever until someone wins"
     end
 
@@ -70,8 +73,35 @@ class Board
         #check column
     end
 
-    def addMove()
+    def addMove(sign)
+        x = ''
+        y = ''
+        loop do
+            displayText("Enter a number between 1-9 that corresponds to an empty tile")
+            move = gets.chomp
+            x, y = @tiles[move.to_i] if @tiles.has_key?(move.to_i)
+            if x.is_a?(Integer) and y.is_a?(Integer)
+                if tileEmpty?(x, y)
+                    @moves[x][y] = sign
+                    break
+                else
+                    puts ("Tile already taken")
+                end
+            end
+        end
+
     end
+
+
+    def switchPlayer()
+    end
+
+    private
+    def tileEmpty?(x, y)
+        return @moves[x][y].is_a?(Integer)
+    end
+
+
 
 
 end
@@ -95,7 +125,7 @@ displayText ("What is Player 2's name?")
 playerTwo = Player.new(gets.chomp)
 
 loop do
-displayText("Is Player 1 'x' or 'o'?")
+displayText("Is #{playerOne.name} 'x' or 'o'?")
 sign = gets.chomp.downcase
 playerOne.move = sign
 break if sign == 'x' || sign == 'o'
@@ -110,12 +140,20 @@ end
 gc.addPlayer(playerOne)
 gc.addPlayer(playerTwo)
 
-displayText("Player 2's sign is #{playerTwo.move}")
+displayText("#{playerTwo.name} will be #{playerTwo.move}")
 displayText("Let the game begin!")
 
+currentPlayer = playerOne
 loop do
+    displayText("it's #{currentPlayer.name}'s turn'")
+    displayText("Choose a tile on the board")
     print board.display()
-    # print board.display()
+    board.addMove(currentPlayer.move)
+
+    print "\n #{board.display} \n"
+    currentPlayer = gc.switchPlayer()
+
+
     # displayText(gc.turn)
     #
     # displayText("Make a move")
